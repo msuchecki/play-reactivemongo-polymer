@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <div>
+        <h2>Project structure - expose your domain</h2>
+        Project is simple library app. It contains two main entities Author and Book.
+        All entities, has own packages in models and views and corresponding Controller, like Authors or Books.
+        All entities has own Repository, for example BookRepo and dedicated collection in MongoDB - "books".
+        When make REST we use names like /books, /book/:id.
+        All this is for expose domain model of our library.
+    </div>
+
+    <div>
+        <h2>Dependency injection</h2>
+        For dependency injection we use traits and objects. For example: Book entity has trait BookRepo, with methods do find, save, update entity
+        and object BookMongoRepo which is implementation of BookRepo for ReactiveMongo driver. Repository is used by Books controller,
+        which is trait with one implementation where we inject concrete BooksMongoRepo. This is simple DI  based on pattern from Play Framework codebase.
+        It works in compile time and not use any framework, just plain Scala.
+    </div>
+
+    <div>
+        <h2>Future[Option[T]]</h2>
+        We want to avoid nested mapping like: future.map(option => option.map(value => ...))
+        Future is container which can contain something or exception. Future[Option[T]] can be flattened to Future[T].
+        For None value we can change Future to failed with dedicated exception.
+        This exception is EntityNotFoundInDBException and we can handle it in Global object:
+
+    </div>
+
+    <div>
+        <h2>Exception in Future</h2>
+    </div>
+</body>
+</html>
