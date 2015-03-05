@@ -60,6 +60,13 @@
       on-core-response="{{postsLoaded}}"
       handleAs="json">
     </core-ajax>
+    <core-ajax id="favorCall"
+      method="PUT"
+      url="/api/person/{{id}}/favor"
+      body='{"favorite":{{isFavorite}}}'
+      contentType="application/json"
+      handleAs="json">
+    </core-ajax>
   </template>
   <script>
   Polymer('post-service', {
@@ -81,8 +88,9 @@
      * @param isFavorite {Boolean} True if the user marked this post as a favorite.
      */
     setFavorite: function(uid, isFavorite) {
-      // no service backend, just log the change
-      console.log('Favorite changed: ' + uid + ", now: " + isFavorite);
+      this.id = uid;
+      this.isFavorite = isFavorite;
+      this.$.favorCall.go();
     }
   });
   </script>
