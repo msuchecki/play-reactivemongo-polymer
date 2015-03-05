@@ -7,7 +7,55 @@
 <body>
     <div>
         <h2>Play Framework - ReactiveMongo - Polymer</h2>
+
     </div>
+
+    <div>
+        <h2>Backend</h2>
+        Backend is simple Play application with one controller <a href="#code/app/controllers/People.scala" class="shortcut">People</a>.
+        We use MongoDB as a database and ReactiveMongo to connect to database.
+        To make it work we must:
+        <ol>
+            <li>Add dependency <code>"org.reactivemongo" %% "play2-reactivemongo" % "0.10.5.0.akka23"</code> in <a href="#code/build.sbt" class="shortcut">build.sbt</a>.</li>
+            <li>Add <code>1100:play.modules.reactivemongo.ReactiveMongoPlugin</code> in <a href="#code/conf/play.plugins" class="shortcut">play.plugins</a>.</li>
+            <li>Add database url <code>mongodb.uri = "mongodb://localhost:27017/people"</code> in <a href="#code/conf/application.conf" class="shortcut">application.conf</a>.</li>
+        </ol>
+
+        People controller has method init to fill database with sample data.
+        You can use it from browser: <a href="http://localhost:9000/api/init">http://localhost:9000/api/init</a>.
+        To get data from database we use helper MongoController. Method list looks like this:
+        <pre>
+            <code>
+            def list = Action.async {implicit request =>
+                collection.find(Json.obj())
+                    .cursor[JsObject]
+                    .collect[List]()
+                    .map(people => Ok(Json.toJson(people)))
+            }
+            </code>
+        </pre>
+        Response is json with all people from database.
+    </div>
+
+    <div>
+        <h2>Polymer</h2>
+        This application is based on Polymer <a href="https://www.polymer-project.org/docs/start/tutorial/intro.html">sample app</a>.
+        We copy all resources to <a href="#code/public" class="shortcut">public</a> directory.
+
+        To call REST services we use core-ajax component.
+        <code>
+            <pre>
+                &ltcore-ajax id="ajax"
+                           auto
+                           url="/api/people"
+                           on-core-response="{{postsLoaded}}"
+                           handleAs="json"&gt
+                &lt/core-ajax&gt
+            </pre>
+        </code>
+    </div>
+
+
 
 </body>
 </html>
