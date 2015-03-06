@@ -7,55 +7,233 @@
 <body>
     <div>
         <h2>Play Framework - ReactiveMongo - Polymer</h2>
-
+        <p>
+            Simple application to demonstrate <code>Polymer</code>, <code>Play Framework</code> and <code>Mongo</code> integration.
+        </p>
     </div>
 
     <div>
-        <h2>Backend</h2>
-        Backend is simple Play application with one controller <a href="#code/app/controllers/People.scala" class="shortcut">People</a>.
-        We use MongoDB as a database and ReactiveMongo to connect to database.
-        To make it work we must:
+        <h2>Database</h2>
+        <p>
+            We use <code>MongoDB</code> as a database and <code>ReactiveMongo</code> to connect to it with asynchronous, non-blocking way.
+        </p>
+
+        <p>
+            To install database you can use this <a href="http://docs.mongodb.org/v2.6/tutorial/install-mongodb-on-ubuntu/">manual</a>.
+        </p>
+
+        <p>
+        To connect to database we use <a href="https://github.com/ReactiveMongo/Play-ReactiveMongo">Play-ReactiveMongo</a> plugin.
+        To make it work you must:
         <ol>
-            <li>Add dependency <code>"org.reactivemongo" %% "play2-reactivemongo" % "0.10.5.0.akka23"</code> in <a href="#code/build.sbt" class="shortcut">build.sbt</a>.</li>
-            <li>Add <code>1100:play.modules.reactivemongo.ReactiveMongoPlugin</code> in <a href="#code/conf/play.plugins" class="shortcut">play.plugins</a>.</li>
-            <li>Add database url <code>mongodb.uri = "mongodb://localhost:27017/people"</code> in <a href="#code/conf/application.conf" class="shortcut">application.conf</a>.</li>
+            <li>Add dependency in <a href="#code/build.sbt" class="shortcut">build.sbt</a>
+                <pre><code>"org.reactivemongo" %% "play2-reactivemongo" % "0.10.5.0.akka23"</code></pre>
+            </li>
+            <li>Add plugin in <a href="#code/conf/play.plugins" class="shortcut">play.plugins</a>
+                <pre><code>1100:play.modules.reactivemongo.ReactiveMongoPlugin</code></pre>
+            </li>
+            <li>Add database url in <a href="#code/conf/application.conf" class="shortcut">application.conf</a>
+                <pre><code>mongodb.uri = "mongodb://localhost:27017/people"</code></pre>
+            </li>
         </ol>
+        </p>
 
-        People controller has method init to fill database with sample data.
-        You can use it from browser: <a href="http://localhost:9000/api/init">http://localhost:9000/api/init</a>.
-        To get data from database we use helper MongoController. Method list looks like this:
-        <pre>
-            <code>
-            def list = Action.async {implicit request =>
-                collection.find(Json.obj())
-                    .cursor[JsObject]
-                    .collect[List]()
-                    .map(people => Ok(Json.toJson(people)))
-            }
-            </code>
-        </pre>
-        Response is json with all people from database.
     </div>
 
     <div>
-        <h2>Polymer</h2>
-        This application is based on Polymer <a href="https://www.polymer-project.org/docs/start/tutorial/intro.html">sample app</a>.
-        We copy all resources to <a href="#code/public" class="shortcut">public</a> directory.
+        <h2>REST API</h2>
 
-        To call REST services we use core-ajax component.
-        <code>
+        <p>
+            Backend is simple <code>Play</code> application with one controller <a href="#code/app/controllers/People.scala" class="shortcut">People</a>.
+            This class extends <code>Controller</code> and <code>MongoController</code> which use <code>Play-ReactiveMongo</code> plugin.
+        </p>
+        <p>
+            <code>MongoController</code> provide db object to get specific database collection:
             <pre>
-                &ltcore-ajax id="ajax"
-                           auto
-                           url="/api/people"
-                           on-core-response="{{postsLoaded}}"
-                           handleAs="json"&gt
-                &lt/core-ajax&gt
+                <code>
+                    def collection = db.collection[JSONCollection]("people")
+                </code>
             </pre>
-        </code>
+        </p>
+
+        <p>
+            People controller has method init to fill database with sample data.
+            You can use it from browser: <a href="http://localhost:9000/api/init">http://localhost:9000/api/init</a>.
+        </p>
+
+        <p>
+            To get data from database we use method <code>list</code>. It looks like this:
+            <pre>
+                <code>
+                    def list = Action.async {implicit request =>
+                      collection.find(Json.obj())
+                        .cursor[JsObject]
+                        .collect[List]()
+                        .map(people => Ok(Json.toJson(people)))
+                    }
+                </code>
+            </pre>
+            Response is json with all people from database:
+            <pre>
+                <code>
+                    [
+                        {
+                        "uid": 1,
+                        "text" : "Have you heard about the Web Components revolution?",
+                        "username" : "Eric",
+                        "avatar" : "../images/avatar-01.svg",
+                        "favorite": false
+                        },
+                        {
+                        "uid": 2,
+                        "text" : "Loving this Polymer thing.",
+                        "username" : "Rob",
+                        "avatar" : "../images/avatar-02.svg",
+                        "favorite": false
+                        },
+                        ...
+                    ]
+                </code>
+            </pre>
+        </p>
+
+        <p>
+            Second method is <code>like</code>. It accept json body with favorite, boolean flag. Method save this flag in database:
+            <pre>
+                <code>
+                    def like(id: Int) = Action.async(BodyParsers.parse.json) { implicit request =>
+                        val value = (request.body \ "favorite").as[Boolean]
+                        collection.update(BSONDocument("uid" -> id), BSONDocument("$set" -> BSONDocument("favorite" -> value)))
+                            .map(le => Ok(Json.obj("success" -> le.ok)))
+                    }
+                </code>
+            </pre>
+        </p>
+
+        <p>
+            To expose REST API in Play framework we must edit <a href="#code/conf/routes" class="shortcut">routes</a> file:
+            <pre>
+                <code>
+                    GET     /api/init                   controllers.People.init
+                    GET     /api/people                 controllers.People.list
+                    PUT     /api/person/:id/favor       controllers.People.favor(id: Int)
+                </code>
+            </pre>
+        </p>
     </div>
 
+    <div>
+        <h2>Frontend</h2>
+        <p>
+            Frontend is based on <a href="https://www.polymer-project.org/"><code>Polymer</code></a> which use <a href="http://webcomponents.org/"><code>Web Components</code></a>.
+            We use <a href="https://www.polymer-project.org/docs/start/tutorial/intro.html">sample app</a> available on Polymer website.
+        </p>
+        <p>
+            Copy all resources from sample app to <a href="#code/public" class="shortcut">public</a> directory in Play application.
+            Application is building from <a href="#code/public/app/post-list.html" class="shortcut">post-list</a> element represents list of people.
+            Single person is represented by <a href="#code/public/app/post-card.html" class="shortcut">post-card</a> element.
+        </p>
+        <p>
+            Polymer element encapsulate template for view and script for behavior:
+            <pre>
+                <code>
+                    &ltpolymer-element name="post-card"&gt
+                        &lttemplate&gt
+                            ...
+                        &lt/template&gt
+                        &ltscript&gt
+                          Polymer({
+                           ...
+                          });
+                        &lt/script&gt
+                    &lt/polymer-element&gt
+                </code>
+            </pre>
+        </p>
+        <p>
+            We can use data binding do fill our template with data:
+            <pre>
+                <code>
+                    &ltimg src="{{post.avatar}}" width="70" height="70"&gt
+                    &lth2&gt{{post.username}}&lt/h2&gt
+                    &ltp&gt{{post.text}}&lt/p&gt
+                </code>
+            </pre>
+        </p>
+    </div>
 
+    <div>
+        <h2>Communication</h2>
+        <p>
+            To call backend REST services from Polymer frontend we use <code>core-ajax</code> component in <a href="#code/public/post-service/post-service.html" class="shortcut">post-service</a> element:
+            <pre>
+                <code>
+                    &ltcore-ajax id="ajax"
+                        auto
+                        url="/api/people"
+                        on-core-response="{{postsLoaded}}"
+                        handleAs="json"&gt
+                    &lt/core-ajax&gt
+                </code>
+            </pre>
+        </p>
+        <p>
+            Function <code>postsLoaded</code> bind response to element attribute <code>posts</code>:
+            <pre>
+                <code>
+                    postsLoaded: function() {
+                        this.posts = this.$.ajax.response.slice(0);
+                    },
+                </code>
+            </pre>
+        </p>
 
+        <p>
+            Element attribute <code>posts</code> is public and can be user by other elements:
+            <pre>
+                <code>
+                    &ltpolymer-element name="post-service" attributes="posts"&gt
+                </code>
+            </pre>
+        </p>
+
+        <p>
+            To set favorite flag on person we must call second REST method.
+            We specify HTTP method, utl, body and contentType and skip auto attribute (Polymer make automatic call on component creation):
+            <pre>
+                <code>
+                    &ltcore-ajax id="likeCall"
+                               method="PUT"
+                               url="/api/person/{{id}}/like"
+                               body='{"favorite":{{isFavorite}}}'
+                               contentType="application/json"
+                               handleAs="json"&gt
+                    &lt/core-ajax&gt
+                </code>
+            </pre>
+        </p>
+        <p>
+            To make call we bind our parameters and invoke <code>go</code> method on <code>core-ajax</code> component:
+            <pre>
+                <code>
+                    setFavorite: function(uid, isFavorite) {
+                        this.id = uid;
+                        this.isFavorite = isFavorite;
+                        this.$.likeCall.go();
+                    }
+                </code>
+            </pre>
+        </p>
+    </div>
+    <div>
+        <h2>Summary</h2>
+        <p>
+            I think <code>MongoDB</code> and <code>Play Framework</code> is great for make backend web services.
+            In Mongo we can store data without specific schema and Play can very simple expose this data as REST API.
+        </p>
+        <p>
+            With frontend in new <code>Polymer</code> library and <code>Web components</code> it is very powerful technology stack.
+        </p>
+    </div>
 </body>
 </html>

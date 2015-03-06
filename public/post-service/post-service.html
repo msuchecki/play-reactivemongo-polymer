@@ -60,9 +60,9 @@
       on-core-response="{{postsLoaded}}"
       handleAs="json">
     </core-ajax>
-    <core-ajax id="favorCall"
+    <core-ajax id="likeCall"
       method="PUT"
-      url="/api/person/{{id}}/favor"
+      url="/api/person/{{id}}/like"
       body='{"favorite":{{isFavorite}}}'
       contentType="application/json"
       handleAs="json">
@@ -90,7 +90,7 @@
     setFavorite: function(uid, isFavorite) {
       this.id = uid;
       this.isFavorite = isFavorite;
-      this.$.favorCall.go();
+      this.$.likeCall.go();
     }
   });
   </script>

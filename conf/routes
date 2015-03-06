@@ -7,6 +7,6 @@ GET     /                           controllers.Assets.at(path="/public", file="
 
 GET     /api/init                   controllers.People.init
 GET     /api/people                 controllers.People.list
-PUT     /api/person/:id/favor       controllers.People.favor(id: Int)
+PUT     /api/person/:id/like        controllers.People.like(id: Int)
 
 GET     /*file                      controllers.Assets.at(path="/public", file)

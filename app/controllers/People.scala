@@ -83,7 +83,7 @@ object People extends Controller with MongoController {
       .map(people => Ok(Json.toJson(people)))
   }
 
-  def favor(id: Int) = Action.async(BodyParsers.parse.json) { implicit request =>
+  def like(id: Int) = Action.async(BodyParsers.parse.json) { implicit request =>
     val value = (request.body \ "favorite").as[Boolean]
     collection.update(BSONDocument("uid" -> id), BSONDocument("$set" -> BSONDocument("favorite" -> value)))
       .map(le => Ok(Json.obj("success" -> le.ok)))

@@ -1,4 +1,4 @@
-name := """SimpleReactiveFun"""
+name := """PlayReactiveMongoPolymer"""
 
 version := "1.0-SNAPSHOT"
 
