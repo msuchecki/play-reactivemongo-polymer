@@ -8,31 +8,35 @@
     <div>
         <h2>Play Framework - ReactiveMongo - Polymer</h2>
         <p>
-            Simple application to demonstrate <code>Polymer</code>, <code>Play Framework</code> and <code>Mongo</code> integration.
+            The purpose of this application is to demonstrate a Service Oriented Approach for Single Page App development.
         </p>
+        <p>
+            To serve this purpose this application template integrates <code>Polymer</code>, <code>Play Framework</code> and <code>MongoDB</code>.
+        </p>
+
     </div>
 
     <div>
         <h2>Database</h2>
         <p>
-            We use <code>MongoDB</code> as a database and <code>ReactiveMongo</code> to connect to it with asynchronous, non-blocking way.
+            A document based NoSQL <code>MongoDB</code> database is used along with <code>ReactiveMongo</code> driver to connect to it in asynchronous, non-blocking way.
         </p>
 
         <p>
-            To install database you can use this <a href="http://docs.mongodb.org/v2.6/tutorial/install-mongodb-on-ubuntu/">manual</a>.
+            To install <code>MongoDB</code> on your computer you can use this <a href="http://docs.mongodb.org/v2.6/installation/">manual</a>.
         </p>
 
         <p>
-        To connect to database we use <a href="https://github.com/ReactiveMongo/Play-ReactiveMongo">Play-ReactiveMongo</a> plugin.
-        To make it work you must:
+        To connect to database <a href="https://github.com/ReactiveMongo/Play-ReactiveMongo">Play-ReactiveMongo</a> plugin is used.
+        To make it work the following has been done:
         <ol>
-            <li>Add dependency in <a href="#code/build.sbt" class="shortcut">build.sbt</a>
+            <li>Adding dependency in <a href="#code/build.sbt" class="shortcut">build.sbt</a>
                 <pre><code>"org.reactivemongo" %% "play2-reactivemongo" % "0.10.5.0.akka23"</code></pre>
             </li>
-            <li>Add plugin in <a href="#code/conf/play.plugins" class="shortcut">play.plugins</a>
+            <li>Adding plugin in <a href="#code/conf/play.plugins" class="shortcut">play.plugins</a>
                 <pre><code>1100:play.modules.reactivemongo.ReactiveMongoPlugin</code></pre>
             </li>
-            <li>Add database url in <a href="#code/conf/application.conf" class="shortcut">application.conf</a>
+            <li>Adding database url in <a href="#code/conf/application.conf" class="shortcut">application.conf</a>
                 <pre><code>mongodb.uri = "mongodb://localhost:27017/people"</code></pre>
             </li>
         </ol>
@@ -44,11 +48,15 @@
         <h2>REST API</h2>
 
         <p>
-            Backend is simple <code>Play</code> application with one controller <a href="#code/app/controllers/People.scala" class="shortcut">People</a>.
-            This class extends <code>Controller</code> and <code>MongoController</code> which use <code>Play-ReactiveMongo</code> plugin.
+            The application tier is delivered by a simple <code>Play</code> app.
+            This way you can easily take advantage of <code>Play</code>'s ecosystem, eg. add some plugins or other benefits, such as Akka, CoffeScript support Web Sockets and many, many more.
+            The template has one controller: <a href="#code/app/controllers/People.scala" class="shortcut">People</a>.
+            This class extends <code>Controller</code> and <code>MongoController</code> which uses <code>Play-ReactiveMongo</code> plugin.
+
+
         </p>
         <p>
-            <code>MongoController</code> provide db object to get specific database collection:
+            <code>MongoController</code> provides <code>db</code> object to access specific database collections:
             <pre>
                 <code>
                     def collection = db.collection[JSONCollection]("people")
@@ -57,12 +65,12 @@
         </p>
 
         <p>
-            People controller has method init to fill database with sample data.
-            You can use it from browser: <a href="http://localhost:9000/api/init">http://localhost:9000/api/init</a>.
+            People controller has <code>init</code> method to fill database with sample data.
+            Just browse: <a href="http://localhost:9000/api/init">http://localhost:9000/api/init</a> to populate the db.
         </p>
 
         <p>
-            To get data from database we use method <code>list</code>. It looks like this:
+            To get data from the database use <code>list</code> method. It's use looks like this:
             <pre>
                 <code>
                     def list = Action.async {implicit request =>
@@ -73,7 +81,7 @@
                     }
                 </code>
             </pre>
-            Response is json with all people from database:
+            In this case the response is json with all people from the database collection:
             <pre>
                 <code>
                     [
@@ -98,7 +106,7 @@
         </p>
 
         <p>
-            Second method is <code>like</code>. It accept json body with favorite, boolean flag. Method save this flag in database:
+            Another method is <code>like</code>. In the template it accepts json body with favorite, boolean flag. The method saves this flag in the database collection:
             <pre>
                 <code>
                     def like(id: Int) = Action.async(BodyParsers.parse.json) { implicit request =>
@@ -111,7 +119,7 @@
         </p>
 
         <p>
-            To expose REST API in Play framework we must edit <a href="#code/conf/routes" class="shortcut">routes</a> file:
+            To expose REST API in Play framework the <a href="#code/conf/routes" class="shortcut">routes</a> file has been configured:
             <pre>
                 <code>
                     GET     /api/init                   controllers.People.init
@@ -125,16 +133,20 @@
     <div>
         <h2>Frontend</h2>
         <p>
-            Frontend is based on <a href="https://www.polymer-project.org/"><code>Polymer</code></a> which use <a href="http://webcomponents.org/"><code>Web Components</code></a>.
-            We use <a href="https://www.polymer-project.org/docs/start/tutorial/intro.html">sample app</a> available on Polymer website.
+            Frontend is based on <a href="https://www.polymer-project.org/"><code>Polymer</code></a> which uses <a href="http://webcomponents.org/"><code>Web Components</code></a>.
+            It's a very prospecting technology, promising true component development of the web.
         </p>
         <p>
-            Copy all resources from sample app to <a href="#code/public" class="shortcut">public</a> directory in Play application.
-            Application is building from <a href="#code/public/app/post-list.html" class="shortcut">post-list</a> element represents list of people.
-            Single person is represented by <a href="#code/public/app/post-card.html" class="shortcut">post-card</a> element.
+            For sake of this template this <a href="https://www.polymer-project.org/docs/start/tutorial/intro.html">sample app</a> available on Polymer website has been used.
         </p>
         <p>
-            Polymer element encapsulate template for view and script for behavior:
+            All resources from the sample app have been copied to <a href="#code/public" class="shortcut">public</a> directory in Play application.
+            (We are looking forward to publishing polymer and web components as webjars in the future to use them as dependencies instead).
+            Application is built from the <a href="#code/public/app/post-list.html" class="shortcut">post-list</a> element which represents a list of people.
+            A single person is represented by the <a href="#code/public/app/post-card.html" class="shortcut">post-card</a> element.
+        </p>
+        <p>
+            Polymer elements encapsulate template for view and script for behavior:
             <pre>
                 <code>
                     &ltpolymer-element name="post-card"&gt
@@ -151,7 +163,7 @@
             </pre>
         </p>
         <p>
-            We can use data binding do fill our template with data:
+            Use data binding in your markup to fill your template with data:
             <pre>
                 <code>
                     &ltimg src="{{post.avatar}}" width="70" height="70"&gt
@@ -165,7 +177,7 @@
     <div>
         <h2>Communication</h2>
         <p>
-            To call backend REST services from Polymer frontend we use <code>core-ajax</code> component in <a href="#code/public/post-service/post-service.html" class="shortcut">post-service</a> element:
+            The <code>core-ajax</code> component in <a href="#code/public/post-service/post-service.html" class="shortcut">post-service</a> element is used to call backend REST services from Polymer:
             <pre>
                 <code>
                     &ltcore-ajax id="ajax"
@@ -178,7 +190,7 @@
             </pre>
         </p>
         <p>
-            Function <code>postsLoaded</code> bind response to element attribute <code>posts</code>:
+            The Function <code>postsLoaded</code> binds response to the <code>posts</code> element attribute:
             <pre>
                 <code>
                     postsLoaded: function() {
@@ -189,7 +201,7 @@
         </p>
 
         <p>
-            Element attribute <code>posts</code> is public and can be user by other elements:
+            The <code>posts</code> element attribute is public and can be used by other elements:
             <pre>
                 <code>
                     &ltpolymer-element name="post-service" attributes="posts"&gt
@@ -198,8 +210,8 @@
         </p>
 
         <p>
-            To set favorite flag on person we must call second REST method.
-            We specify HTTP method, utl, body and contentType and skip auto attribute (Polymer make automatic call on component creation):
+            To set favorite flag for a person you have to call the <code>like</code> REST URL.
+            Specify the HTTP method, url, body and contentType:
             <pre>
                 <code>
                     &ltcore-ajax id="likeCall"
@@ -213,7 +225,7 @@
             </pre>
         </p>
         <p>
-            To make call we bind our parameters and invoke <code>go</code> method on <code>core-ajax</code> component:
+            To make the call bind your parameters and invoke <code>go</code> method on the <code>like-call</code> <code>core-ajax</code> component:
             <pre>
                 <code>
                     setFavorite: function(uid, isFavorite) {
@@ -228,11 +240,13 @@
     <div>
         <h2>Summary</h2>
         <p>
-            I think <code>MongoDB</code> and <code>Play Framework</code> is great for make backend web services.
-            In Mongo we can store data without specific schema and Play can very simple expose this data as REST API.
+            <code>MongoDB</code> and <code>Play Framework</code> are a great mix to implement backend web services, easy to integrate with contemporary UI frameworks.
         </p>
         <p>
-            With frontend in new <code>Polymer</code> library and <code>Web components</code> it is very powerful technology stack.
+            Thanks to Mongo you can store data without worrying about the schema and Play can expose this data very easily via REST API.
+        </p>
+        <p>
+            It is a very powerful technology stack with the UI in cutting edge <code>Polymer</code> library and <code>Web components</code>.
         </p>
     </div>
 </body>
