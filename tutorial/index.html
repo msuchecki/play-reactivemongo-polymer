@@ -65,11 +65,6 @@
         </p>
 
         <p>
-            Posts controller has <code>init</code> method to fill database with sample data.
-            Just browse: <a href="http://localhost:9000/api/init">http://localhost:9000/api/init</a> to populate the db.
-        </p>
-
-        <p>
             To get data from the database use <code>list</code> method. It's use looks like this:
             <pre>
                 <code>
@@ -122,7 +117,6 @@
             To expose REST API in Play framework the <a href="#code/conf/routes" class="shortcut">routes</a> file has been configured:
             <pre>
                 <code>
-    GET /api/init               controllers.Posts.init
     GET /api/posts              controllers.Posts.list
     PUT /api/post/:id/favor     controllers.Posts.favor(id: Int)
                 </code>

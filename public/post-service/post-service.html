@@ -58,6 +58,7 @@
       auto
       url="/api/posts"
       on-core-response="{{postsLoaded}}"
+      on-core-error="{{postError}}"
       handleAs="json">
     </core-ajax>
     <core-ajax id="likeCall"
@@ -76,6 +77,11 @@
     postsLoaded: function() {
       // Make a copy of the loaded data
       this.posts = this.$.ajax.response.slice(0);
+    },
+    postError: function(event){
+      var error = this.$.ajax.error;
+      console.log(error);
+      alert(error);
     },
     /** 
      * Update the service with the current favorite value.

@@ -5,7 +5,6 @@
 # Home page
 GET     /                           controllers.Assets.at(path="/public", file="app/index.html")
 
-GET     /api/init                   controllers.Posts.init
 GET     /api/posts                  controllers.Posts.list
 PUT     /api/post/:id/like          controllers.Posts.like(id: Int)
 
