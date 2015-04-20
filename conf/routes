@@ -5,8 +5,8 @@
 # Home page
 GET     /                           controllers.Assets.at(path="/public", file="app/index.html")
 
-GET     /api/init                   controllers.People.init
-GET     /api/people                 controllers.People.list
-PUT     /api/person/:id/like        controllers.People.like(id: Int)
+GET     /api/init                   controllers.Posts.init
+GET     /api/posts                  controllers.Posts.list
+PUT     /api/post/:id/like          controllers.Posts.like(id: Int)
 
 GET     /*file                      controllers.Assets.at(path="/public", file)

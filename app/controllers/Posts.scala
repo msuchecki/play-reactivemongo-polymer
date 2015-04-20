@@ -10,9 +10,9 @@ import reactivemongo.bson.BSONDocument
 import play.modules.reactivemongo.json.BSONFormats._
 import play.modules.reactivemongo.json.ImplicitBSONHandlers._
 
-object People extends Controller with MongoController {
+object Posts extends Controller with MongoController {
 
-  def collection = db.collection[JSONCollection]("people")
+  def collection = db.collection[JSONCollection]("posts")
 
   def init = Action.async { implicit request =>
     val obj1 = Json.obj(
@@ -80,7 +80,7 @@ object People extends Controller with MongoController {
     collection.find(Json.obj())
       .cursor[JsObject]
       .collect[List]()
-      .map(people => Ok(Json.toJson(people)))
+      .map(posts => Ok(Json.toJson(posts)))
   }
 
   def like(id: Int) = Action.async(BodyParsers.parse.json) { implicit request =>

@@ -37,7 +37,7 @@
                 <pre><code>1100:play.modules.reactivemongo.ReactiveMongoPlugin</code></pre>
             </li>
             <li>Adding database url in <a href="#code/conf/application.conf" class="shortcut">application.conf</a>
-                <pre><code>mongodb.uri = "mongodb://localhost:27017/people"</code></pre>
+                <pre><code>mongodb.uri = "mongodb://localhost:27017/posts"</code></pre>
             </li>
         </ol>
         </p>
@@ -50,7 +50,7 @@
         <p>
             The application tier is delivered by a simple <code>Play</code> app.
             This way you can easily take advantage of <code>Play</code>'s ecosystem, eg. add some plugins or other benefits, such as Akka, CoffeScript support Web Sockets and many, many more.
-            The template has one controller: <a href="#code/app/controllers/People.scala" class="shortcut">People</a>.
+            The template has one controller: <a href="#code/app/controllers/Posts.scala" class="shortcut">Posts</a>.
             This class extends <code>Controller</code> and <code>MongoController</code> which uses <code>Play-ReactiveMongo</code> plugin.
 
 
@@ -59,13 +59,13 @@
             <code>MongoController</code> provides <code>db</code> object to access specific database collections:
             <pre>
                 <code>
-                    def collection = db.collection[JSONCollection]("people")
+    def collection = db.collection[JSONCollection]("posts")
                 </code>
             </pre>
         </p>
 
         <p>
-            People controller has <code>init</code> method to fill database with sample data.
+            Posts controller has <code>init</code> method to fill database with sample data.
             Just browse: <a href="http://localhost:9000/api/init">http://localhost:9000/api/init</a> to populate the db.
         </p>
 
@@ -73,34 +73,34 @@
             To get data from the database use <code>list</code> method. It's use looks like this:
             <pre>
                 <code>
-                    def list = Action.async {implicit request =>
-                      collection.find(Json.obj())
-                        .cursor[JsObject]
-                        .collect[List]()
-                        .map(people => Ok(Json.toJson(people)))
-                    }
+    def list = Action.async {implicit request =>
+      collection.find(Json.obj())
+        .cursor[JsObject]
+        .collect[List]()
+        .map(posts => Ok(Json.toJson(posts)))
+    }
                 </code>
             </pre>
-            In this case the response is json with all people from the database collection:
+            In this case the response is json with all posts from the database collection:
             <pre>
                 <code>
-                    [
-                        {
-                        "uid": 1,
-                        "text" : "Have you heard about the Web Components revolution?",
-                        "username" : "Eric",
-                        "avatar" : "../images/avatar-01.svg",
-                        "favorite": false
-                        },
-                        {
-                        "uid": 2,
-                        "text" : "Loving this Polymer thing.",
-                        "username" : "Rob",
-                        "avatar" : "../images/avatar-02.svg",
-                        "favorite": false
-                        },
-                        ...
-                    ]
+    [
+        {
+        "uid": 1,
+        "text" : "Have you heard about the Web Components revolution?",
+        "username" : "Eric",
+        "avatar" : "../images/avatar-01.svg",
+        "favorite": false
+        },
+        {
+        "uid": 2,
+        "text" : "Loving this Polymer thing.",
+        "username" : "Rob",
+        "avatar" : "../images/avatar-02.svg",
+        "favorite": false
+        },
+        ...
+    ]
                 </code>
             </pre>
         </p>
@@ -109,11 +109,11 @@
             Another method is <code>like</code>. In the template it accepts json body with favorite, boolean flag. The method saves this flag in the database collection:
             <pre>
                 <code>
-                    def like(id: Int) = Action.async(BodyParsers.parse.json) { implicit request =>
-                        val value = (request.body \ "favorite").as[Boolean]
-                        collection.update(BSONDocument("uid" -> id), BSONDocument("$set" -> BSONDocument("favorite" -> value)))
-                            .map(le => Ok(Json.obj("success" -> le.ok)))
-                    }
+    def like(id: Int) = Action.async(BodyParsers.parse.json) { implicit request =>
+        val value = (request.body \ "favorite").as[Boolean]
+        collection.update(BSONDocument("uid" -> id), BSONDocument("$set" -> BSONDocument("favorite" -> value)))
+            .map(le => Ok(Json.obj("success" -> le.ok)))
+    }
                 </code>
             </pre>
         </p>
@@ -122,9 +122,9 @@
             To expose REST API in Play framework the <a href="#code/conf/routes" class="shortcut">routes</a> file has been configured:
             <pre>
                 <code>
-                    GET     /api/init                   controllers.People.init
-                    GET     /api/people                 controllers.People.list
-                    PUT     /api/person/:id/favor       controllers.People.favor(id: Int)
+    GET /api/init               controllers.Posts.init
+    GET /api/posts              controllers.Posts.list
+    PUT /api/post/:id/favor     controllers.Posts.favor(id: Int)
                 </code>
             </pre>
         </p>
@@ -142,23 +142,23 @@
         <p>
             All resources from the sample app have been copied to <a href="#code/public" class="shortcut">public</a> directory in Play application.
             (We are looking forward to publishing polymer and web components as webjars in the future to use them as dependencies instead).
-            Application is built from the <a href="#code/public/app/post-list.html" class="shortcut">post-list</a> element which represents a list of people.
-            A single person is represented by the <a href="#code/public/app/post-card.html" class="shortcut">post-card</a> element.
+            Application is built from the <a href="#code/public/app/post-list.html" class="shortcut">post-list</a> element which represents a list of posts.
+            A single post is represented by the <a href="#code/public/app/post-card.html" class="shortcut">post-card</a> element.
         </p>
         <p>
             Polymer elements encapsulate template for view and script for behavior:
             <pre>
                 <code>
-                    &lt;polymer-element name="post-card"&gt;
-                        &lt;template&gt;
-                            ...
-                        &lt;/template&gt;
-                        &lt;script&gt;
-                          Polymer({
-                           ...
-                          });
-                        &lt;/script&gt;
-                    &lt;/polymer-element&gt;
+    &lt;polymer-element name="post-card"&gt;
+        &lt;template&gt;
+            ...
+        &lt;/template&gt;
+        &lt;script&gt;
+          Polymer({
+           ...
+          });
+        &lt;/script&gt;
+    &lt;/polymer-element&gt;
                 </code>
             </pre>
         </p>
@@ -166,9 +166,9 @@
             Use data binding in your markup to fill your template with data:
             <pre>
                 <code>
-                    &lt;img src="{{post.avatar}}" width="70" height="70"&gt;
-                    &lt;h2&gt;{{post.username}}&lt;/h2&gt;
-                    &lt;p&gt;{{post.text}}&lt;/p&gt;
+    &lt;img src="{{post.avatar}}" width="70" height="70"&gt;
+    &lt;h2&gt;{{post.username}}&lt;/h2&gt;
+    &lt;p&gt;{{post.text}}&lt;/p&gt;
                 </code>
             </pre>
         </p>
@@ -180,12 +180,12 @@
             The <code>core-ajax</code> component in <a href="#code/public/post-service/post-service.html" class="shortcut">post-service</a> element is used to call backend REST services from Polymer:
             <pre>
                 <code>
-                    &lt;core-ajax id="ajax"
-                        auto
-                        url="/api/people"
-                        on-core-response="{{postsLoaded}}"
-                        handleAs="json"&gt;
-                    &lt;/core-ajax&gt;
+    &lt;core-ajax id="ajax"
+        auto
+        url="/api/posts"
+        on-core-response="{{postsLoaded}}"
+        handleAs="json"&gt;
+    &lt;/core-ajax&gt;
                 </code>
             </pre>
         </p>
@@ -193,9 +193,9 @@
             The Function <code>postsLoaded</code> binds response to the <code>posts</code> element attribute:
             <pre>
                 <code>
-                    postsLoaded: function() {
-                        this.posts = this.$.ajax.response.slice(0);
-                    },
+    postsLoaded: function() {
+        this.posts = this.$.ajax.response.slice(0);
+    },
                 </code>
             </pre>
         </p>
@@ -204,23 +204,23 @@
             The <code>posts</code> element attribute is public and can be used by other elements:
             <pre>
                 <code>
-                    &lt;polymer-element name="post-service" attributes="posts"&gt;
+    &lt;polymer-element name="post-service" attributes="posts"&gt;
                 </code>
             </pre>
         </p>
 
         <p>
-            To set favorite flag for a person you have to call the <code>like</code> REST URL.
+            To set favorite flag for a post you have to call the <code>like</code> REST URL.
             Specify the HTTP method, url, body and contentType:
             <pre>
                 <code>
-                    &lt;core-ajax id="likeCall"
-                               method="PUT"
-                               url="/api/person/{{id}}/like"
-                               body='{"favorite":{{isFavorite}}}'
-                               contentType="application/json"
-                               handleAs="json"&gt;
-                    &lt;/core-ajax&gt;
+    &lt;core-ajax id="likeCall"
+               method="PUT"
+               url="/api/post/{{id}}/like"
+               body='{"favorite":{{isFavorite}}}'
+               contentType="application/json"
+               handleAs="json"&gt;
+    &lt;/core-ajax&gt;
                 </code>
             </pre>
         </p>
@@ -228,11 +228,11 @@
             To make the call bind your parameters and invoke <code>go</code> method on the <code>like-call</code> <code>core-ajax</code> component:
             <pre>
                 <code>
-                    setFavorite: function(uid, isFavorite) {
-                        this.id = uid;
-                        this.isFavorite = isFavorite;
-                        this.$.likeCall.go();
-                    }
+    setFavorite: function(uid, isFavorite) {
+        this.id = uid;
+        this.isFavorite = isFavorite;
+        this.$.likeCall.go();
+    }
                 </code>
             </pre>
         </p>
