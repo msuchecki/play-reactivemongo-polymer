@@ -149,16 +149,16 @@
             Polymer elements encapsulate template for view and script for behavior:
             <pre>
                 <code>
-                    &ltpolymer-element name="post-card"&gt
-                        &lttemplate&gt
+                    &lt;polymer-element name="post-card"&gt;
+                        &lt;template&gt;
                             ...
-                        &lt/template&gt
-                        &ltscript&gt
+                        &lt;/template&gt;
+                        &lt;script&gt;
                           Polymer({
                            ...
                           });
-                        &lt/script&gt
-                    &lt/polymer-element&gt
+                        &lt;/script&gt;
+                    &lt;/polymer-element&gt;
                 </code>
             </pre>
         </p>
@@ -166,9 +166,9 @@
             Use data binding in your markup to fill your template with data:
             <pre>
                 <code>
-                    &ltimg src="{{post.avatar}}" width="70" height="70"&gt
-                    &lth2&gt{{post.username}}&lt/h2&gt
-                    &ltp&gt{{post.text}}&lt/p&gt
+                    &lt;img src="{{post.avatar}}" width="70" height="70"&gt;
+                    &lt;h2&gt;{{post.username}}&lt;/h2&gt;
+                    &lt;p&gt;{{post.text}}&lt;/p&gt;
                 </code>
             </pre>
         </p>
@@ -180,12 +180,12 @@
             The <code>core-ajax</code> component in <a href="#code/public/post-service/post-service.html" class="shortcut">post-service</a> element is used to call backend REST services from Polymer:
             <pre>
                 <code>
-                    &ltcore-ajax id="ajax"
+                    &lt;core-ajax id="ajax"
                         auto
                         url="/api/people"
                         on-core-response="{{postsLoaded}}"
-                        handleAs="json"&gt
-                    &lt/core-ajax&gt
+                        handleAs="json"&gt;
+                    &lt;/core-ajax&gt;
                 </code>
             </pre>
         </p>
@@ -204,7 +204,7 @@
             The <code>posts</code> element attribute is public and can be used by other elements:
             <pre>
                 <code>
-                    &ltpolymer-element name="post-service" attributes="posts"&gt
+                    &lt;polymer-element name="post-service" attributes="posts"&gt;
                 </code>
             </pre>
         </p>
@@ -214,13 +214,13 @@
             Specify the HTTP method, url, body and contentType:
             <pre>
                 <code>
-                    &ltcore-ajax id="likeCall"
+                    &lt;core-ajax id="likeCall"
                                method="PUT"
                                url="/api/person/{{id}}/like"
                                body='{"favorite":{{isFavorite}}}'
                                contentType="application/json"
-                               handleAs="json"&gt
-                    &lt/core-ajax&gt
+                               handleAs="json"&gt;
+                    &lt;/core-ajax&gt;
                 </code>
             </pre>
         </p>
