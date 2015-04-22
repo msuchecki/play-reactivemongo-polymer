@@ -4,4 +4,4 @@ The purpose of this application is to demonstrate a Service Oriented Approach fo
 
 To serve this purpose this application template integrates **Polymer**, **Play Framework** and **MongoDB**.
 
-For sake of this template this [sample app]("https://www.polymer-project.org/docs/start/tutorial/intro.html" "sample app") available on Polymer website has been used.
+For sake of this template this [sample app] (https://www.polymer-project.org/docs/start/tutorial/intro.html) available on Polymer website has been used.
