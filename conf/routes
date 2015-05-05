@@ -3,9 +3,10 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Assets.at(path="/public", file="app/index.html")
+GET     /                           controllers.Posts.index
 
 GET     /api/posts                  controllers.Posts.list
 PUT     /api/post/:id/like          controllers.Posts.like(id: Int)
 
-GET     /*file                      controllers.Assets.at(path="/public", file)
+GET     /vassets/*file              controllers.Assets.versioned(path="/public", file: Asset)
+GET     /webjars/*file              controllers.WebJarAssets.at(file)

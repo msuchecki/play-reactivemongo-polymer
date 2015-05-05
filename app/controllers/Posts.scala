@@ -1,18 +1,22 @@
 package controllers
 
-import play.api.libs.json.{JsObject, Json}
-import play.api.mvc.{BodyParsers, Action, Controller}
-import play.modules.reactivemongo.MongoController
-import play.modules.reactivemongo.json.collection.JSONCollection
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import reactivemongo.bson.BSONDocument
+import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.{Action, BodyParsers, Controller}
+import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.BSONFormats._
-import play.modules.reactivemongo.json.ImplicitBSONHandlers._
+import play.modules.reactivemongo.json.collection.JSONCollection
+import reactivemongo.bson.BSONDocument
 import reactivemongo.core.actors.Exceptions.PrimaryUnavailableException
+import views.html
 
 object Posts extends Controller with MongoController {
 
   def collection = db.collection[JSONCollection]("posts")
+
+  def index = Action {
+    Ok(html.index())
+  }
 
   def list = Action.async {implicit request =>
     collection.find(Json.obj())
