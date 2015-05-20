@@ -28,7 +28,7 @@ object Posts extends Controller with MongoController {
       .map(le => Ok(Json.obj("success" -> le.ok)))
   }
 
-  def delete(id: String) = Action.async {
+  def delete(id: Int) = Action.async {
     collection.remove(BSONDocument("uid" -> id))
       .map(le => RedirectAfterPost(le, routes.Posts.list()))
   }

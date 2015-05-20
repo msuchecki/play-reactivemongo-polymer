@@ -69,6 +69,7 @@
              method="DELETE"
              body='{}'
              contentType="application/json"
+             on-response="postRemoved"
              handleas="json">
     </core-ajax>
     <core-ajax id="addPost"
@@ -142,7 +143,11 @@
       console.log("# postAdded: " + this.$.addPost.lastresponse);
       this._setPosts(this.$.addPost.lastresponse.slice());
       console.log("# posts: " + this.posts.length);
-      this.fire('new-posts');
+    },
+    postRemoved: function() {
+      console.log("# postRemoved: " + this.$.removeCall.lastresponse);
+      this._setPosts(this.$.removeCall.lastresponse.slice());
+      console.log("# posts: " + this.posts.length);
     }
   });
   </script>
