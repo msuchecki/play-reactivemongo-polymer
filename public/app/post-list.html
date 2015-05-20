@@ -15,6 +15,10 @@
   <template>
   <post-service id="service" posts="{{posts}}"></post-service>
 
+    <core-icon
+          icon="add-circle"
+          on-click="handleAddNew">
+    </core-icon>
     <div layout vertical center>
       <template id="repeater" is="x-repeat" observe="favorite" items="[[posts]]">
         <post-card
@@ -51,6 +55,9 @@
     },
     favFilter: function(input) {
       return input.favorite;
+    },
+    handleAddNew: function(event, detail, sender) {
+      this.$.service.addNew();
     }
   });
   </script>

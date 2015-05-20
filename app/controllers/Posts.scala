@@ -36,4 +36,14 @@ object Posts extends Controller with MongoController {
   private def RedirectAfterPost(lastError: LastError, call: Call): Result =
     if (lastError.inError) InternalServerError("%s".format(lastError))
     else Redirect(call)
+
+  def add = Action.async(BodyParsers.parse.json) { implicit request =>
+    collection.save(BSONDocument(
+      "uid" -> 123,
+      "text" -> "Elo elo",
+      "username" -> "Cat",
+      "avatar" -> "../images/avatar-12.svg",
+      "favorite" -> false
+    )).map(le => Redirect(routes.Posts.list()))
+  }
 }

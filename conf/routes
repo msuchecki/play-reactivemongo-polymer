@@ -7,6 +7,7 @@ GET     /                           controllers.Assets.at(path="/public", file="
 
 GET     /api/posts                  controllers.Posts.list
 PUT     /api/post/:id/like          controllers.Posts.like(id: Int)
+POST    /api/post                   controllers.Posts.add
 DELETE  /api/post/:id               controllers.Posts.delete(id)
 
 GET     /*file                      controllers.Assets.at(path="/public", file)
