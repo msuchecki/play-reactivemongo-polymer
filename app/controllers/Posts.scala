@@ -1,14 +1,14 @@
 package controllers
 
-import play.api.libs.json.{JsObject, Json}
-import play.api.mvc.{BodyParsers, Action, Controller}
-import play.modules.reactivemongo.MongoController
-import play.modules.reactivemongo.json.collection.JSONCollection
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import reactivemongo.bson.BSONDocument
+import play.api.libs.json.{JsObject, Json}
+import play.api.mvc._
+import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.BSONFormats._
-import play.modules.reactivemongo.json.ImplicitBSONHandlers._
+import play.modules.reactivemongo.json.collection.JSONCollection
+import reactivemongo.bson.BSONDocument
 import reactivemongo.core.actors.Exceptions.PrimaryUnavailableException
+import reactivemongo.core.commands.LastError
 
 object Posts extends Controller with MongoController {
 
@@ -19,7 +19,7 @@ object Posts extends Controller with MongoController {
       .cursor[JsObject]
       .collect[List]()
       .map(posts => Ok(Json.toJson(posts)))
-      .recover {case PrimaryUnavailableException => InternalServerError("Pleas install MongoDB")}
+      .recover {case PrimaryUnavailableException => InternalServerError("Please install MongoDB")}
   }
 
   def like(id: Int) = Action.async(BodyParsers.parse.json) { implicit request =>
@@ -27,4 +27,13 @@ object Posts extends Controller with MongoController {
     collection.update(BSONDocument("uid" -> id), BSONDocument("$set" -> BSONDocument("favorite" -> value)))
       .map(le => Ok(Json.obj("success" -> le.ok)))
   }
+
+  def delete(id: String) = Action.async {
+    collection.remove(BSONDocument("uid" -> id))
+      .map(le => RedirectAfterPost(le, routes.Posts.list()))
+  }
+
+  private def RedirectAfterPost(lastError: LastError, call: Call): Result =
+    if (lastError.inError) InternalServerError("%s".format(lastError))
+    else Redirect(call)
 }

@@ -67,6 +67,12 @@
              contentType="application/json"
              handleas="json">
     </core-ajax>
+    <core-ajax id="removeCall"
+             method="DELETE"
+             body='{}'
+             contentType="application/json"
+             handleas="json">
+    </core-ajax>
   </template>
 </dom-module>
   <script>
@@ -114,6 +120,11 @@
           return;
         }
       }
+    },
+    remove: function(id) {
+      this.$.removeCall.url = "/api/post/" + id;
+      this.$.removeCall.generateRequest();
+      return;
     }
   });
   </script>

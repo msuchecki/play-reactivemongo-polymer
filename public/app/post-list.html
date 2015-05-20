@@ -19,7 +19,8 @@
       <template id="repeater" is="x-repeat" observe="favorite" items="[[posts]]">
         <post-card
           favorite="[[item.favorite]]"
-          on-favorite-tap="handleFavorite">
+          on-favorite-tap="handleFavorite"
+          on-delete-tap="handleDelete">
           <img src="[[item.avatar]]" width="70" height="70">
           <h2>[[item.username]]</h2>
           <p>[[item.text]]</p>
@@ -40,6 +41,10 @@
     handleFavorite: function(ev, detail) {
       var post = this.$.repeater.itemForElement(ev.target);
       this.$.service.setFavorite(post.uid, detail.favorite);
+    },
+    handleDelete: function(ev, detail) {
+      var post = this.$.repeater.itemForElement(ev.target);
+      this.$.service.remove(post.uid);
     },
     showChanged: function() {
       this.$.repeater.filter = (this.show == 'favorites' ? this.favFilter : undefined)
