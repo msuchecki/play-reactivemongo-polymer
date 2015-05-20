@@ -35,10 +35,12 @@ trait Posts {
     else Redirect(call)
 
   def add = Action.async(BodyParsers.parse.json) { implicit request =>
+    val username = (request.body \ "username").as[String]
+    val text = (request.body \ "text").as[String]
     postRepo.save(BSONDocument(
       "uid" -> 123,
-      "text" -> "Elo elo",
-      "username" -> "Cat",
+      "text" -> text,
+      "username" -> username,
       "avatar" -> "../images/avatar-12.svg",
       "favorite" -> false
     )).map(le => Redirect(routes.Posts.list()))

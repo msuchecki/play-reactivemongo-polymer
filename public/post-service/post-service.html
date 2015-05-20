@@ -75,7 +75,6 @@
     <core-ajax id="addPost"
              method="POST"
              url="/api/post"
-             body='{"favorite": "true"}'
              contentType="application/json"
              on-response="postAdded"
              handleas="json">
@@ -135,7 +134,8 @@
       this.$.removeCall.generateRequest();
       return;
     },
-    addNew: function() {
+    addNew: function(post) {
+      this.$.addPost.body=post;
       this.$.addPost.generateRequest();
       return;
     },

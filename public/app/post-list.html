@@ -1,6 +1,7 @@
 <link rel="import" href="../components/polymer/polymer.html">
 <link rel="import" href="../post-service/post-service.html">
 <link rel="import" href="post-card.html">
+<link rel="import" href="post-card-add.html">
 
 <dom-module id="post-list">
   <style>
@@ -15,11 +16,10 @@
   <template>
   <post-service id="service" posts="{{posts}}"></post-service>
 
-    <core-icon
-          icon="add-circle"
-          on-click="handleAddNew">
-    </core-icon>
     <div layout vertical center>
+        <post-card-add username="aaaa" on-save-post="handleSavePost">
+        </post-card-add>
+
       <template id="repeater" is="x-repeat" observe="favorite" items="[[posts]]">
         <post-card
           favorite="[[item.favorite]]"
@@ -56,8 +56,9 @@
     favFilter: function(input) {
       return input.favorite;
     },
-    handleAddNew: function(event, detail, sender) {
-      this.$.service.addNew();
+    handleSavePost: function(event, detail, sender) {
+      console.log("# Save post: " + detail);
+      this.$.service.addNew(detail);
     }
   });
   </script>
