@@ -26,16 +26,19 @@ object PostsSpec extends PlaySpecification with Results with Mockito {
     "avatar" -> "../images/avatar-03.svg",
     "favorite" -> false
   )
-  mockPostRepo.find() returns Future(List(wojciechPost, arunPost))
 
   class TestController() extends Controller with Posts {
     override def postRepo: PostRepo = mockPostRepo
   }
 
+  val controller = new TestController()
+
   "Posts Page#list" should {
     "should be valid" in new WithApplication {
-      val controller = new TestController()
+      mockPostRepo.find() returns Future(List(wojciechPost, arunPost))
+
       val result: Future[Result] = controller.list().apply(FakeRequest())
+
       val bodyText: JsValue = contentAsJson(result)
       bodyText must be equalTo JsArray(List(wojciechPost, arunPost))
     }

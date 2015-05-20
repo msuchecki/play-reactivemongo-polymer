@@ -1,10 +1,9 @@
 package controllers
 
-import backend.{PostRepo, PostMongoRepo}
+import backend.{PostMongoRepo, PostRepo}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc._
-import play.modules.reactivemongo.json.BSONFormats._
 import reactivemongo.bson.BSONDocument
 import reactivemongo.core.actors.Exceptions.PrimaryUnavailableException
 import reactivemongo.core.commands.LastError
@@ -22,12 +21,12 @@ trait Posts {
 
   def like(id: Int) = Action.async(BodyParsers.parse.json) { implicit request =>
     val value = (request.body \ "favorite").as[Boolean]
-    postRepo.collection.update(BSONDocument("uid" -> id), BSONDocument("$set" -> BSONDocument("favorite" -> value)))
+    postRepo.update(BSONDocument("uid" -> id), BSONDocument("$set" -> BSONDocument("favorite" -> value)))
       .map(le => Ok(Json.obj("success" -> le.ok)))
   }
 
   def delete(id: Int) = Action.async {
-    postRepo.collection.remove(BSONDocument("uid" -> id))
+    postRepo.remove(BSONDocument("uid" -> id))
       .map(le => RedirectAfterPost(le, routes.Posts.list()))
   }
 
@@ -36,7 +35,7 @@ trait Posts {
     else Redirect(call)
 
   def add = Action.async(BodyParsers.parse.json) { implicit request =>
-    postRepo.collection.save(BSONDocument(
+    postRepo.save(BSONDocument(
       "uid" -> 123,
       "text" -> "Elo elo",
       "username" -> "Cat",
