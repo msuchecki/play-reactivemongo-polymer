@@ -7,7 +7,7 @@
 <link rel="import" href="../components/iron-input/iron-input.html">
 <link rel="import" href="../post-service/post-service.html">
 <link rel="import" href="post-card.html">
-<link rel="import" href="add-post.html">
+<link rel="import" href="post-elements.html">
 
 <dom-module id="post-list">
   <style>
@@ -30,7 +30,7 @@
         <post-card
           favorite="[[item.favorite]]"
           on-favorite-tap="handleFavorite"
-          on-delete-tap="handleDelete">
+          on-delete-tap="confirmDelete">
           <img src="[[item.avatar]]" width="70" height="70">
           <h2>[[item.username]]</h2>
           <p>[[item.text]]</p>
@@ -44,6 +44,8 @@
     <paper-toast id="toastPostRemoved" class="capsule"  text="Post removed"></paper-toast>
 
     <paper-spinner id="spinner"></paper-spinner>
+
+    <remove-post-confirm-dialog id="confirmDialog" on-delete-post="handleDelete"></remove-post-confirm-dialog>
 
   </template>
 </dom-module>
@@ -69,10 +71,10 @@
       this.$.service.setFavorite(post['_id']['$oid'], detail.favorite);
     },
     confirmDelete: function(ev, detail) {
-      this.$.confirmDialog.toggle();
-    },
-    handleDelete: function(ev, detail) {
       var post = this.$.repeater.itemForElement(ev.target);
+      this.$.confirmDialog.toggle(post);
+    },
+    handleDelete: function(ev, post) {
       this.$.spinner.active = true;
       this.$.service.remove(post['_id']['$oid']);
     },
