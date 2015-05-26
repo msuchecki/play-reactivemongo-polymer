@@ -1,7 +1,13 @@
 <link rel="import" href="../components/polymer/polymer.html">
+<link rel="import" href="../components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../components/paper-button/paper-button.html">
+<link rel="import" href="../components/paper-input/paper-input.html">
+<link rel="import" href="../components/paper-toast/paper-toast.html">
+<link rel="import" href="../components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../components/iron-input/iron-input.html">
 <link rel="import" href="../post-service/post-service.html">
 <link rel="import" href="post-card.html">
-<link rel="import" href="post-card-add.html">
+<link rel="import" href="add-post-button.html">
 
 <dom-module id="post-list">
   <style>
@@ -14,13 +20,17 @@
   }
   </style>
   <template>
-  <post-service id="service" posts="{{posts}}"></post-service>
+  <post-service id="service" posts="{{posts}}" on-post-added="postAdded" on-post-removed="postRemoved"></post-service>
 
     <div layout vertical center>
-        <post-card-add username="aaaa" on-save-post="handleSavePost">
-        </post-card-add>
 
-      <template id="repeater" is="x-repeat" observe="favorite" items="[[posts]]">
+      <post-card hidden$="{{hideAddForm}}" nobuttons>
+        <img src="../images/avatar-02.svg" width="70" height="70">
+        <h2>Rob</h2>
+        <paper-input id="newPost" value="{{addPostValue}}" label="What's on your mind?" on-keypress="keypressHandler"></paper-input>
+      </post-card>
+
+      <template id="repeater" is="dom-repeat" observe="favorite" items="[[posts]]">
         <post-card
           favorite="[[item.favorite]]"
           on-favorite-tap="handleFavorite"
@@ -30,25 +40,45 @@
           <p>[[item.text]]</p>
         </post-card>
       </template>
+
     </div>
+    <add-post-button on-show-add-post-form="showAddForm"></add-post-button>
+
+    <paper-toast id="toastPostAdded" class="capsule"  text="Post added"></paper-toast>
+    <paper-toast id="toastPostRemoved" class="capsule"  text="Post removed"></paper-toast>
+
+    <paper-spinner id="spinner"></paper-spinner>
+
   </template>
 </dom-module>
   <script>
   Polymer({
     is: "post-list",
-    published: {
-      show: String
-    },
-    bind: {
-      show: 'showChanged'
+    properties: {
+      show: {
+        type: String,
+        observer: 'showChanged'
+      },
+      hideAddForm: {
+        type: Boolean,
+        value: true
+      },
+      addPostValue: {
+        type: String,
+        notify: true
+      }
     },
     handleFavorite: function(ev, detail) {
       var post = this.$.repeater.itemForElement(ev.target);
-      this.$.service.setFavorite(post.uid, detail.favorite);
+      this.$.service.setFavorite(post['_id']['$oid'], detail.favorite);
+    },
+    confirmDelete: function(ev, detail) {
+      this.$.confirmDialog.toggle();
     },
     handleDelete: function(ev, detail) {
       var post = this.$.repeater.itemForElement(ev.target);
-      this.$.service.remove(post.uid);
+      this.$.spinner.active = true;
+      this.$.service.remove(post['_id']['$oid']);
     },
     showChanged: function() {
       this.$.repeater.filter = (this.show == 'favorites' ? this.favFilter : undefined)
@@ -57,8 +87,39 @@
       return input.favorite;
     },
     handleSavePost: function(event, detail, sender) {
-      console.log("# Save post: " + detail);
-      this.$.service.addNew(detail);
+      var post = {};
+      post.username = 'Rob';
+      post.avatar = '../images/avatar-02.svg';
+      post.favorite = false;
+      post.text = this.addPostValue;
+
+      this.$.spinner.active = true;
+      this.$.service.addNew(post);
+
+      this.addPostValue = '';
+      this.hideAddForm = !this.hideAddForm;
+    },
+    showAddForm: function(event, detail, sender) {
+      this.hideAddForm = !this.hideAddForm;
+
+//      if (!this.hideAddForm) {
+//        this.$.newPost.focus();
+//      }
+    },
+    keypressHandler: function (event, detail, sender) {
+      if (event.keyCode == '13') {
+        this.handleSavePost();
+      }
+    },
+    postAdded: function () {
+      this.$.toastPostAdded.toggle();
+      this.$.service.refresh();
+      this.$.spinner.active = false;
+    },
+    postRemoved: function () {
+      this.$.toastPostRemoved.toggle();
+      this.$.service.refresh();
+      this.$.spinner.active = false;
     }
   });
   </script>
