@@ -32,7 +32,7 @@
         <post-card nobuttons>
             <img src="../images/avatar-02.svg" width="70" height="70">
             <h2>Rob</h2>
-            <paper-input id="newPost" value="{{addPostValue}}" label="What's on your mind?" on-keypress="keypressHandler"></paper-input>
+            <paper-input id="newPost" value="{{addPostValue}}" label="What's on your mind?" on-keypress="keypressHandler" autofocus></paper-input>
         </post-card>
     </template>
 </dom-module>
@@ -50,7 +50,7 @@
             this.addPostValue = '';
         },
         focus: function() {
-            this.$.newPost.focus();
+            this.$.newPost.$.input.focus();
         },
         handlePostAdd: function () {
             var post = {};
