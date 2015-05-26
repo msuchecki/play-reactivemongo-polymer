@@ -4,7 +4,7 @@ import backend.{PostMongoRepo, PostRepo}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc._
-import reactivemongo.bson.BSONDocument
+import reactivemongo.bson.{BSONObjectID, BSONDocument}
 import reactivemongo.core.actors.Exceptions.PrimaryUnavailableException
 import reactivemongo.core.commands.LastError
 
@@ -15,18 +15,18 @@ trait Posts {
 
   def list = Action.async {implicit request =>
     postRepo.find()
-      .map(posts => Ok(Json.toJson(posts)))
+      .map(posts => Ok(Json.toJson(posts.reverse)))
       .recover {case PrimaryUnavailableException => InternalServerError("Please install MongoDB")}
   }
 
-  def like(id: Int) = Action.async(BodyParsers.parse.json) { implicit request =>
+  def like(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
     val value = (request.body \ "favorite").as[Boolean]
-    postRepo.update(BSONDocument("uid" -> id), BSONDocument("$set" -> BSONDocument("favorite" -> value)))
+    postRepo.update (BSONDocument("_id" -> BSONObjectID(id)), BSONDocument("$set" -> BSONDocument("favorite" -> value)))
       .map(le => Ok(Json.obj("success" -> le.ok)))
   }
 
-  def delete(id: Int) = Action.async {
-    postRepo.remove(BSONDocument("uid" -> id))
+  def delete(id: String) = Action.async {
+    postRepo.remove(BSONDocument("_id" -> BSONObjectID(id)))
       .map(le => RedirectAfterPost(le, routes.Posts.list()))
   }
 
@@ -37,11 +37,11 @@ trait Posts {
   def add = Action.async(BodyParsers.parse.json) { implicit request =>
     val username = (request.body \ "username").as[String]
     val text = (request.body \ "text").as[String]
+    val avatar = (request.body \ "avatar").as[String]
     postRepo.save(BSONDocument(
-      "uid" -> 123,
       "text" -> text,
       "username" -> username,
-      "avatar" -> "../images/avatar-12.svg",
+      "avatar" -> avatar,
       "favorite" -> false
     )).map(le => Redirect(routes.Posts.list()))
   }
