@@ -7,7 +7,7 @@
 <link rel="import" href="../components/iron-input/iron-input.html">
 <link rel="import" href="../post-service/post-service.html">
 <link rel="import" href="post-card.html">
-<link rel="import" href="add-post-button.html">
+<link rel="import" href="add-post.html">
 
 <dom-module id="post-list">
   <style>
@@ -24,11 +24,7 @@
 
     <div layout vertical center>
 
-      <post-card hidden$="{{hideAddForm}}" nobuttons>
-        <img src="../images/avatar-02.svg" width="70" height="70">
-        <h2>Rob</h2>
-        <paper-input id="newPost" value="{{addPostValue}}" label="What's on your mind?" on-keypress="keypressHandler"></paper-input>
-      </post-card>
+      <add-post-form id="newPostForm" hidden$="{{hideAddForm}}" on-add-post="handleAddPost"></add-post-form>
 
       <template id="repeater" is="dom-repeat" observe="favorite" items="[[posts]]">
         <post-card
@@ -86,32 +82,21 @@
     favFilter: function(input) {
       return input.favorite;
     },
-    handleSavePost: function(event, detail, sender) {
-      var post = {};
-      post.username = 'Rob';
-      post.avatar = '../images/avatar-02.svg';
-      post.favorite = false;
-      post.text = this.addPostValue;
-
+    handleAddPost: function(event, detail, sender) {
       this.$.spinner.active = true;
-      this.$.service.addNew(post);
-
-      this.addPostValue = '';
+      this.$.service.addNew(detail);
       this.hideAddForm = !this.hideAddForm;
     },
     showAddForm: function(event, detail, sender) {
       this.hideAddForm = !this.hideAddForm;
 
-//      if (!this.hideAddForm) {
-//        this.$.newPost.focus();
-//      }
-    },
-    keypressHandler: function (event, detail, sender) {
-      if (event.keyCode == '13') {
-        this.handleSavePost();
+      if (!this.hideAddForm) {
+        this.$.newPostForm.focus();
       }
     },
+
     postAdded: function () {
+      this.$.newPostForm.resetForm();
       this.$.toastPostAdded.toggle();
       this.$.service.refresh();
       this.$.spinner.active = false;
