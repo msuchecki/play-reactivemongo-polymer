@@ -59,12 +59,14 @@
     <div class="card-header layout horizontal center">
       <content select="img"></content>
       <content select="h2"></content>
+
     </div>
 
     <div hidden$="{{nobuttons}}">
       <paper-icon-button
               id="create"
-              icon="create">
+              icon="create"
+              on-tap="editTapped">
       </paper-icon-button>
 
       <paper-icon-button
@@ -81,27 +83,59 @@
     </div>
 
     <content></content>
+
+    <p hidden$="{{viewMode}}"><paper-input id="postText" on-keypress="keypressHandler" value="{{text}}" /></p>
+    <p hidden$="{{!viewMode}}">[[text]]</p>
+
   </template>
 </dom-module>
 <script>
   Polymer({
     is: 'post-card',
     properties: {
+      viewMode: {
+        type: Boolean,
+        value: true
+      },
       favorite: {
         type: Boolean,
         notify: true,
         reflectToAttribute: true
+      },
+      text: {
+        type:String
       },
       nobuttons: {
         type: Boolean,
         value: false
       }
     },
+    handleUpdate: function () {
+      this.fire('update-post', this.text);
+      this.viewMode = true;
+      this.nobuttons = false;
+    },
+    keypressHandler: function (event, detail, sender) {
+      if (event.keyCode == '13') {
+        this.handleUpdate();
+      }
+    },
+    edit: function () {
+      this.viewMode = false;
+    },
+    view: function () {
+      this.viewMode = true;
+    },
     favoriteTapped: function(event, detail, sender) {
       this.fire('favorite-tap', {favorite: !this.favorite} );
     },
     deleteTapped: function(event, detail, sender) {
       this.fire('delete-tap');
+    },
+    editTapped: function () {
+      this.viewMode = false;
+      this.nobuttons = true;
+      this.$.postText.$.input.focus();
     }
   });
 </script>

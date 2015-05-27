@@ -54,7 +54,6 @@
   <template>
     <iron-ajax id="ajax"
                url="/api/posts"
-               auto
                handle-as="json"
                last-response="{{posts}}">
     </iron-ajax>
@@ -63,6 +62,12 @@
                content-type="application/json"
                handle-as="json"
                on-response="refresh">
+    </iron-ajax>
+    <iron-ajax id="updatePostCall"
+               method="PUT"
+               content-type="application/json"
+               handle-as="json"
+               on-response="postUpdated">
     </iron-ajax>
     <iron-ajax id="removeCall"
                method="DELETE"
@@ -112,6 +117,11 @@
         this.$.removeCall.url = "/api/post/" + id;
         this.$.removeCall.generateRequest();
     },
+    update: function(id, post) {
+        this.$.updatePostCall.url = "/api/post/" + id;
+        this.$.updatePostCall.body = JSON.stringify({ "text": post.text });
+        this.$.updatePostCall.generateRequest();
+    },
     addNew: function(post) {
       this.$.addPost.body=JSON.stringify(post);
       this.$.addPost.generateRequest();
@@ -121,6 +131,9 @@
     },
     postRemoved: function() {
       this.fire('post-removed');
+    },
+    postUpdated: function() {
+      this.fire('post-updated');
     }
   });
 </script>

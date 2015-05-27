@@ -25,6 +25,12 @@ trait Posts {
       .map(le => Ok(Json.obj("success" -> le.ok)))
   }
 
+  def update(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
+    val value = (request.body \ "text").as[String]
+    postRepo.update (BSONDocument("_id" -> BSONObjectID(id)), BSONDocument("$set" -> BSONDocument("text" -> value)))
+      .map(le => Ok(Json.obj("success" -> le.ok)))
+  }
+
   def delete(id: String) = Action.async {
     postRepo.remove(BSONDocument("_id" -> BSONObjectID(id)))
       .map(le => RedirectAfterPost(le, routes.Posts.list()))
