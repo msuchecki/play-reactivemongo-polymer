@@ -62,8 +62,6 @@
   var tabs = document.querySelector('paper-tabs');
   var list = document.querySelector('post-list');
 
-//  alert(tabs);
-
   tabs.addEventListener('iron-select', function() {
     console.log(tabs.selected );
     list.show = tabs.selected == 0 ? "all" : "favorites";
