@@ -112,12 +112,18 @@
     },
     handleUpdate: function () {
       this.fire('update-post', this.text);
-      this.viewMode = true;
+      this.view();
       this.nobuttons = false;
     },
     keypressHandler: function (event, detail, sender) {
-      if (event.keyCode == '13') {
+      var key_enter = 13;
+      var key_escape = 27;
+      if (event.keyCode == key_enter) {
         this.handleUpdate();
+      }
+      if (event.keyCode == key_escape) {
+        this.view();
+        this.nobuttons = false;
       }
     },
     edit: function () {
@@ -133,7 +139,7 @@
       this.fire('delete-tap');
     },
     editTapped: function () {
-      this.viewMode = false;
+      this.edit();
       this.nobuttons = true;
       this.$.postText.$.input.focus();
     }
