@@ -84,7 +84,7 @@
 
     <content></content>
 
-    <p hidden$="{{viewMode}}"><paper-input id="postText" on-keypress="keypressHandler" value="{{text}}" /></p>
+    <p hidden$="{{viewMode}}"><paper-input id="postText" on-keydown="keydownHandler" value="{{text}}" /></p>
     <p hidden$="{{!viewMode}}">[[text]]</p>
 
   </template>
@@ -115,7 +115,7 @@
       this.view();
       this.nobuttons = false;
     },
-    keypressHandler: function (event, detail, sender) {
+    keydownHandler: function (event, detail, sender) {
       var key_enter = 13;
       var key_escape = 27;
       if (event.keyCode == key_enter) {

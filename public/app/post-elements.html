@@ -33,7 +33,7 @@
         <post-card nobuttons>
             <img src="../images/avatar-02.svg" width="70" height="70">
             <h2>Rob</h2>
-            <paper-input id="newPost" value="{{addPostValue}}" label="What's on your mind?" on-keypress="keypressHandler" autofocus></paper-input>
+            <paper-input id="newPost" value="{{addPostValue}}" label="What's on your mind?" on-keydown="keydownHandler" autofocus></paper-input>
         </post-card>
     </template>
 </dom-module>
@@ -62,7 +62,7 @@
 
             this.fire('add-post', post);
         },
-        keypressHandler: function (event, detail, sender) {
+        keydownHandler: function (event, detail, sender) {
             var key_enter = 13;
             var key_escape = 27;
             if (event.keyCode == key_enter) {
