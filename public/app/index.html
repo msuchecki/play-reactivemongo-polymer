@@ -63,7 +63,6 @@
   var list = document.querySelector('post-list');
 
   tabs.addEventListener('iron-select', function() {
-    console.log(tabs.selected );
     list.show = tabs.selected == 0 ? "all" : "favorites";
   });
 

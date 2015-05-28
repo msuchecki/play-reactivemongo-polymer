@@ -63,8 +63,14 @@
             this.fire('add-post', post);
         },
         keypressHandler: function (event, detail, sender) {
-            if (event.keyCode == '13') {
+            var key_enter = 13;
+            var key_escape = 27;
+            if (event.keyCode == key_enter) {
                 this.handlePostAdd();
+            }
+            if (event.keyCode == key_escape) {
+                this.resetForm();
+                this.fire('hide-adding-form');
             }
         }
     });

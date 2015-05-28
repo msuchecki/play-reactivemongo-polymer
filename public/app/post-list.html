@@ -24,7 +24,7 @@
 
     <div layout vertical center>
 
-      <add-post-form id="newPostForm" hidden$="{{hideAddForm}}" on-add-post="handleAddPost"></add-post-form>
+      <add-post-form id="newPostForm" hidden$="{{hideAddForm}}" on-add-post="handleAddPost" on-hide-adding-form="hideAddingForm"></add-post-form>
 
       <template id="repeater" is="dom-repeat" observe="favorite" items="[[posts]]">
         <post-card
@@ -106,6 +106,9 @@
       if (!this.hideAddForm) {
         this.$.newPostForm.focus();
       }
+    },
+    hideAddingForm: function(event, detail, sender) {
+      this.hideAddForm = !this.hideAddForm;
     },
     postAdded: function () {
       this.$.newPostForm.resetForm();
