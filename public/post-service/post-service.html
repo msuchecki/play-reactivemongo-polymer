@@ -1,5 +1,5 @@
 <link rel="import" href="../components/polymer/polymer.html">
-<link rel="import" href="../components/core-ajax/core-ajax.html">
+<link rel="import" href="../components/iron-ajax/iron-ajax.html">
 <!-- 
   `<post-service>` provides an API for a fake service -- 
   _unquote_, the read-only social networking service!
@@ -49,105 +49,91 @@
 -->
 <dom-module id="post-service">
   <style>
-  core-ajax {
-    display: none;
-  }
+
   </style>
   <template>
-    <core-ajax id="ajax"
-      url="/api/posts"
-      auto
-      handleas="json"
-      on-response="postsLoaded">
-    </core-ajax>
-    <core-ajax id="likeCall"
-             method="PUT"
-             contentType="application/json"
-             handleas="json">
-    </core-ajax>
-    <core-ajax id="removeCall"
-             method="DELETE"
-             body='{}'
-             contentType="application/json"
-             on-response="postRemoved"
-             handleas="json">
-    </core-ajax>
-    <core-ajax id="addPost"
-             method="POST"
-             url="/api/post"
-             contentType="application/json"
-             on-response="postAdded"
-             handleas="json">
-    </core-ajax>
+    <iron-ajax id="ajax"
+               url="/api/posts"
+               handle-as="json"
+               last-response="{{posts}}">
+    </iron-ajax>
+    <iron-ajax id="likeCall"
+               method="PUT"
+               content-type="application/json"
+               handle-as="json"
+               on-response="refresh">
+    </iron-ajax>
+    <iron-ajax id="updatePostCall"
+               method="PUT"
+               content-type="application/json"
+               handle-as="json"
+               on-response="postUpdated">
+    </iron-ajax>
+    <iron-ajax id="removeCall"
+               method="DELETE"
+               body='{}'
+               content-type="application/json"
+               on-response="postRemoved"
+               handle-as="json">
+    </iron-ajax>
+    <iron-ajax id="addPost"
+               method="POST"
+               url="/api/post"
+               content-type="application/json"
+               on-response="postAdded"
+               handle-as="json">
+    </iron-ajax>
   </template>
 </dom-module>
-  <script>
+<script>
   Polymer({
     is: 'post-service',
-    /*
-    ready: function() {
-      console.log("<post-service>: Ready");
-      this.$.ajax.url = "/api/posts";
-      this.$.ajax.send();
-    },
-    */
-    published: {
+    properties: {
       posts: {
         type: Array,
-        readOnly: true,
         notify: true
       }
     },
-    postsLoaded: function() {
-      console.log("<post-service>: Got response");
-      // Make a copy of the loaded data
-      this._setPosts(this.$.ajax.lastresponse.slice());
-      console.log("# posts: " + this.posts.length);
-      this.fire('new-posts');
+    refresh: function () {
+      this.$.ajax.generateRequest();
     },
-    /** 
+    /**
      * Update the service with the current favorite value.
-     * (Two-way data binding updates the favorite value 
+     * (Two-way data binding updates the favorite value
      * stored locally.) If this was a real service, this
      * method would do something useful.
-     * 
+     *
      * @method setFavorite
-     * @param uid {Number} Unique ID for post.
+     * @param id {Number} Unique ID for post.
      * @param isFavorite {Boolean} True if the user marked this post as a favorite.
      */
-    setFavorite: function(uid, isFavorite) {
-      // no service backend, change local data
+    setFavorite: function(id, isFavorite) {
       var i, len;
-      for (i = 0, len=this.posts.length; i<len; i++) {
-        if (this.posts[i].uid == uid) {
-          //this.posts[i].favorite = isFavorite;
-          this.setPathValue('posts.' + i + '.favorite', isFavorite);
-          this.$.likeCall.url = "/api/post/" + uid + "/like"
-          this.$.likeCall.body='{"favorite": ' + isFavorite + '}'
-          this.$.likeCall.generateRequest();
-          return;
-        }
-      }
+      this.$.likeCall.url = '/api/post/' + id + '/like';
+      this.$.likeCall.body = JSON.stringify({ "favorite": isFavorite });
+      this.$.likeCall.generateRequest();
     },
     remove: function(id) {
-      this.$.removeCall.url = "/api/post/" + id;
-      this.$.removeCall.generateRequest();
-      return;
+        this.$.removeCall.url = "/api/post/" + id;
+        this.$.removeCall.generateRequest();
+    },
+    update: function(id, post) {
+        this.$.updatePostCall.url = "/api/post/" + id;
+        this.$.updatePostCall.body = JSON.stringify({ "text": post.text });
+        this.$.updatePostCall.generateRequest();
     },
     addNew: function(post) {
-      this.$.addPost.body=post;
+      this.$.addPost.body=JSON.stringify(post);
       this.$.addPost.generateRequest();
-      return;
     },
     postAdded: function() {
-      console.log("# postAdded: " + this.$.addPost.lastresponse);
-      this._setPosts(this.$.addPost.lastresponse.slice());
-      console.log("# posts: " + this.posts.length);
+      this.fire('post-added');
     },
     postRemoved: function() {
-      console.log("# postRemoved: " + this.$.removeCall.lastresponse);
-      this._setPosts(this.$.removeCall.lastresponse.slice());
-      console.log("# posts: " + this.posts.length);
+      this.fire('post-removed');
+    },
+    postUpdated: function() {
+      this.fire('post-updated');
     }
   });
-  </script>
+</script>
