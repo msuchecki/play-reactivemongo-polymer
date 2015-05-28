@@ -1,17 +1,15 @@
 {
   "name": "gold-phone-input",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "A validating input for a phone number",
   "authors": [
     "The Polymer Authors"
   ],
   "keywords": [
     "web-components",
-    "web-component",
     "polymer",
     "gold",
-    "input",
-    "phone"
+    "input"
   ],
   "main": [
     "gold-phone-input.html"
