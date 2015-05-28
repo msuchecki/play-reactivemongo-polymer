@@ -1,17 +1,15 @@
 {
   "name": "gold-phone-input",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "A validating input for a phone number",
   "authors": [
     "The Polymer Authors"
   ],
   "keywords": [
     "web-components",
-    "web-component",
     "polymer",
     "gold",
-    "input",
-    "phone"
+    "input"
   ],
   "main": [
     "gold-phone-input.html"
@@ -38,14 +36,13 @@
     "web-component-tester": "*",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
   },
-  "_release": "0.9.3",
+  "_release": "0.9.4",
   "_resolution": {
     "type": "version",
-    "tag": "v0.9.3",
-    "commit": "ac1c7f9d75cba3f76eca6ba7276248f988ba54ee"
+    "tag": "v0.9.4",
+    "commit": "56ae9db6f4c798bf71347732a0a4a1469a6795ce"
   },
   "_source": "git://github.com/PolymerElements/gold-phone-input.git",
-  "_target": "~0.9.3",
-  "_originalSource": "PolymerElements/gold-phone-input",
-  "_direct": true
+  "_target": "~0.9",
+  "_originalSource": "PolymerElements/gold-phone-input"
 }
