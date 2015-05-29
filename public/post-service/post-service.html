@@ -12,13 +12,13 @@
                last-response="{{posts}}">
     </iron-ajax>
     <iron-ajax id="likeCall"
-               method="PUT"
+               method="PATCH"
                content-type="application/json"
                handle-as="json"
                on-response="refresh">
     </iron-ajax>
     <iron-ajax id="updatePostCall"
-               method="PUT"
+               method="PATCH"
                content-type="application/json"
                handle-as="json"
                on-response="postUpdated">
