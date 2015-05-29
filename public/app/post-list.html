@@ -16,13 +16,17 @@
     width: 100%;
   }
   post-card {
-    margin: 0 10% 30px 10%;
+    margin-bottom: 30px;
+  }
+  #main {
+    width: 900px;
+    margin: 0 auto;
   }
   </style>
   <template>
   <post-service id="service" posts="{{posts}}" on-post-added="postAdded" on-post-removed="postRemoved" on-post-updated="postUpdated"></post-service>
 
-    <div layout vertical center>
+    <div id="main">
 
       <add-post-form id="newPostForm" hidden$="{{hideAddForm}}" on-add-post="handleAddPost" on-hide-adding-form="hideAddingForm"></add-post-form>
 
