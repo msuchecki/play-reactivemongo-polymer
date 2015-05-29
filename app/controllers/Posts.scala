@@ -1,6 +1,7 @@
 package controllers
 
 import backend.{PostMongoRepo, PostRepo}
+import controllers.PostFields._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc._
@@ -20,19 +21,19 @@ trait Posts {
   }
 
   def like(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
-    val value = (request.body \ "favorite").as[Boolean]
-    postRepo.update (BSONDocument("_id" -> BSONObjectID(id)), BSONDocument("$set" -> BSONDocument("favorite" -> value)))
+    val value = (request.body \ Favorite).as[Boolean]
+    postRepo.update(BSONDocument(Id -> BSONObjectID(id)), BSONDocument("$set" -> BSONDocument(Favorite -> value)))
       .map(le => Ok(Json.obj("success" -> le.ok)))
   }
 
   def update(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
-    val value = (request.body \ "text").as[String]
-    postRepo.update (BSONDocument("_id" -> BSONObjectID(id)), BSONDocument("$set" -> BSONDocument("text" -> value)))
+    val value = (request.body \ Text).as[String]
+    postRepo.update(BSONDocument(Id -> BSONObjectID(id)), BSONDocument("$set" -> BSONDocument(Text -> value)))
       .map(le => Ok(Json.obj("success" -> le.ok)))
   }
 
   def delete(id: String) = Action.async {
-    postRepo.remove(BSONDocument("_id" -> BSONObjectID(id)))
+    postRepo.remove(BSONDocument(Id -> BSONObjectID(id)))
       .map(le => RedirectAfterPost(le, routes.Posts.list()))
   }
 
@@ -41,16 +42,24 @@ trait Posts {
     else Redirect(call)
 
   def add = Action.async(BodyParsers.parse.json) { implicit request =>
-    val username = (request.body \ "username").as[String]
-    val text = (request.body \ "text").as[String]
-    val avatar = (request.body \ "avatar").as[String]
+    val username = (request.body \ Username).as[String]
+    val text = (request.body \ Text).as[String]
+    val avatar = (request.body \ Avatar).as[String]
     postRepo.save(BSONDocument(
-      "text" -> text,
-      "username" -> username,
-      "avatar" -> avatar,
-      "favorite" -> false
+      Text -> text,
+      Username -> username,
+      Avatar -> avatar,
+      Favorite -> false
     )).map(le => Redirect(routes.Posts.list()))
   }
 }
 
 object Posts extends Controller with Posts
+
+object PostFields {
+  val Id = "_id"
+  val Text = "text"
+  val Username = "username"
+  val Avatar = "avatar"
+  val Favorite = "favorite"
+}
